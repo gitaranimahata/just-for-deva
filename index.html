@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>For My Love ❤️</title>
+
+<style>
+body{
+  margin:0;
+  font-family:'Segoe UI',sans-serif;
+  min-height:100vh;
+  color:#fff;
+  background:linear-gradient(270deg,#ff5f9e,#ffc371,#7afcff);
+  background-size:800% 800%;
+  animation:bg 15s ease infinite;
+  overflow-x:hidden;
+  cursor:none;
+}
+@keyframes bg{
+  0%{background-position:0% 50%}
+  50%{background-position:100% 50%}
+  100%{background-position:0% 50%}
+}
+.app{
+  max-width:420px;
+  margin:auto;
+  padding:20px;
+  text-align:center;
+}
+button{
+  width:100%;
+  padding:14px;
+  margin:10px 0;
+  border:none;
+  border-radius:14px;
+  font-size:1.1rem;
+  background:rgba(255,255,255,.25);
+  color:white;
+  cursor:pointer;
+}
+.result{font-size:1.4rem;font-weight:bold;margin-top:10px}
+.next{display:none}
+.page{display:none}
+.page.active{display:block}
+
+/* ❤️ HEART RAIN */
+.heart{
+  position:fixed;
+  top:-20px;
+  animation:fall linear infinite;
+}
+@keyframes fall{
+  to{transform:translateY(110vh);opacity:0}
+}
+
+/* 🌸 FLOWERS */
+.flower{
+  position:fixed;
+  top:-20px;
+  font-size:24px;
+  animation:flowerFall linear infinite;
+}
+@keyframes flowerFall{
+  to{transform:translateY(110vh) rotate(360deg);opacity:0}
+}
+
+/* 💖 INTRO */
+#intro{
+  position:fixed;
+  inset:0;
+  background:linear-gradient(135deg,#ff5f9e,#ffc371);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:3rem;
+  z-index:9999;
+}
+
+/* 🖱️ CURSOR HEART */
+.cursor-heart{
+  position:fixed;
+  pointer-events:none;
+  font-size:18px;
+  animation:cursorFade .8s linear forwards;
+}
+@keyframes cursorFade{
+  to{transform:translateY(-20px);opacity:0}
+}
+</style>
+</head>
+
+<body>
+
+<div id="intro">❤️ For My Love ❤️</div>
+
+<!-- 🎵 BACKGROUND MUSIC -->
+<audio id="bgm" loop>
+  <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3">
+</audio>
+
+<div class="app">
+
+<!-- PAGE 1 -->
+<div class="page active" data-voice="Choose your favorite movie">
+<h1>🎬 Favorite Movie</h1>
+<button onclick="answer(true)">Hindi</button>
+<button onclick="answer(false)">Bengali</button>
+<button onclick="answer(false)">South</button>
+<button onclick="answer(false)">English</button>
+<p class="result"></p>
+<button class="next" onclick="next()">Next ➡️</button>
+</div>
+
+<!-- PAGE 2 -->
+<div class="page" data-voice="Choose your favorite food">
+<h1>🍽️ Favorite Food</h1>
+<button onclick="answer(false)">Biryani</button>
+<button onclick="answer(false)">Fried Rice</button>
+<button onclick="answer(false)">Porata</button>
+<button onclick="answer(true)">Thakumar Hater Luchi</button>
+<p class="result"></p>
+<button class="next" onclick="next()">Next ➡️</button>
+</div>
+
+<!-- PAGE 3 -->
+<div class="page" data-voice="Choose my favorite Bengali song">
+<h1>🎵 Favorite Song</h1>
+<button onclick="song('https://youtu.be/C5COEOYyAow',false)">Mon Hariye</button>
+<button onclick="song('https://youtu.be/Jry9XwKIplk',false)">Oi Tor</button>
+<button onclick="song('https://youtu.be/S4eDULIdR90',true)">Sedin Dujone</button>
+<button onclick="song('https://youtu.be/XCLuzlxuzVA',false)">Keno Valo</button>
+<p class="result"></p>
+<button class="next" onclick="next()">Next ➡️</button>
+</div>
+
+<!-- PAGE 4 -->
+<div class="page" data-voice="Choose my favorite singer">
+<h1>🎤 Favorite Singer</h1>
+<button onclick="answer(false)">Arijit Singh</button>
+<button onclick="answer(false)">Jubin Garg</button>
+<button onclick="answer(false)">Shreya Ghoshal</button>
+<button onclick="answer(true)">Ayan Sarkar</button>
+<p class="result"></p>
+<button class="next" onclick="next()">Next ➡️</button>
+</div>
+
+<!-- PAGE 5 -->
+<div class="page" data-voice="Choose your best moment">
+<h1>🌍 Best Moment</h1>
+<button onclick="answer(false)">With Lover</button>
+<button onclick="answer(false)">With Family</button>
+<button onclick="answer(true)">With Friends</button>
+<button onclick="answer(false)">Alone</button>
+<p class="result"></p>
+<button class="next" onclick="next()">Final ➡️</button>
+</div>
+
+<!-- FINAL -->
+<div class="page" data-voice="Congratulations my love">
+<h1>🎉 Congratulations 🎉</h1>
+<h2>You Win My Heart ❤️</h2>
+<button onclick="showScore()">Show Score</button>
+<p class="result" id="score"></p>
+</div>
+
+</div>
+
+<script>
+let page=0,score=0,answered=false;
+const pages=document.querySelectorAll(".page");
+
+/* 🎤 FEMALE VOICE */
+function speak(text){
+ let u=new SpeechSynthesisUtterance(text);
+ let v=speechSynthesis.getVoices().find(v=>v.name.toLowerCase().includes("female"));
+ u.voice=v||speechSynthesis.getVoices()[0];
+ u.pitch=1.7;
+ speechSynthesis.cancel();
+ speechSynthesis.speak(u);
+}
+
+/* ANSWER LOGIC */
+function answer(correct){
+ if(answered) return;
+ answered=true;
+ let r=pages[page].querySelector(".result");
+ if(correct){
+   score+=10;
+   r.innerHTML="✅ Correct 😂";
+   speak("Yay! correct answer ha ha ha");
+ }else{
+   r.innerHTML="❌ Wrong 😢";
+   speak("Oh noo this is wrong very cringe try again");
+ }
+ pages[page].querySelector(".next").style.display="block";
+}
+
+/* SONG */
+function song(url,correct){
+ window.open(url,'_blank');
+ answer(correct);
+}
+
+/* NEXT PAGE */
+function next(){
+ pages[page].classList.remove("active");
+ page++; answered=false;
+ pages[page].classList.add("active");
+ speak(pages[page].dataset.voice);
+ if(page===pages.length-1) startFlowers();
+}
+
+/* FINAL SCORE */
+function showScore(){
+ document.getElementById("score").innerHTML=`❤️ Total Score: ${score} / 50 ❤️`;
+ speak(`For my love. Your total score is ${score} points`);
+}
+
+/* ❤️ HEART RAIN */
+setInterval(()=>{
+ let h=document.createElement("div");
+ h.className="heart";
+ h.innerHTML="❤️";
+ h.style.left=Math.random()*100+"vw";
+ h.style.fontSize=10+Math.random()*20+"px";
+ h.style.animationDuration=3+Math.random()*4+"s";
+ document.body.appendChild(h);
+ setTimeout(()=>h.remove(),7000);
+},400);
+
+/* 🌸 FLOWER RAIN */
+function startFlowers(){
+ setInterval(()=>{
+  let f=document.createElement("div");
+  f.className="flower";
+  f.innerHTML=["🌸","🌼","🌺"][Math.floor(Math.random()*3)];
+  f.style.left=Math.random()*100+"vw";
+  f.style.animationDuration=3+Math.random()*3+"s";
+  document.body.appendChild(f);
+  setTimeout(()=>f.remove(),7000);
+ },300);
+}
+
+/* 🖱️ CURSOR HEART */
+document.addEventListener("mousemove",e=>{
+ let c=document.createElement("div");
+ c.className="cursor-heart";
+ c.innerHTML="💖";
+ c.style.left=e.clientX+"px";
+ c.style.top=e.clientY+"px";
+ document.body.appendChild(c);
+ setTimeout(()=>c.remove(),800);
+});
+
+/* INTRO + FIRST PAGE VOICE */
+let t=2000+Math.random()*2000;
+setTimeout(()=>{
+ document.getElementById("intro").style.display="none";
+ document.getElementById("bgm").play();
+ speak("For my love");
+ setTimeout(()=>speak(pages[0].dataset.voice),1200);
+},t);
+</script>
+
+</body>
+</html>
